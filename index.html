@@ -7,7 +7,119 @@
   
   
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Expiry Tracker</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 10px;
+      width: 200px;
+    }
+    #product-list {
+      list-style-type: none;
+    }
+    #product-list li {
+      padding: 5px;
+      background-color: #f4f4f4;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Product Expiry Tracker</h1>
+
+  <!-- Form to input product name and expiry date -->
+  <form id="product-form">
+    <label for="product-name">Product Name:</label>
+    <input type="text" id="product-name" required><br>
+    
+    <label for="expiry-date">Expiry Date:</label>
+    <input type="date" id="expiry-date" required><br>
+    
+    <button type="submit">Add Product</button>
+  </form>
+
+  <h2>Product List:</h2>
+  <ul id="product-list"></ul>
+
+  <script>
+    // Firebase config object (replace with your own Firebase project settings)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA8fgfiVXyB9zI2VrwPAPBnWODv-aIMWeY",
+      authDomain: "project-1-cffdd.firebaseapp.com",
+      projectId: "project-1-cffdd",
+      storageBucket: "project-1-cffdd.firebasestorage.app",
+      messagingSenderId: "357705367508",
+      appId: "1:357705367508:web:dbc9e4ee55ebdc2bcce041",
+      measurementId: "G-Z1SJFRVZHE"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    // Get form and product list elements
+    const productForm = document.getElementById('product-form');
+    const productList = document.getElementById('product-list');
+
+    // Add product to Firestore
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const productName = document.getElementById('product-name').value;
+      const expiryDate = document.getElementById('expiry-date').value;
+
+      // Add data to Firestore
+      await db.collection('products').add({
+        name: productName,
+        expiryDate: expiryDate
+      });
+
+      alert('Product added!');
+      productForm.reset();
+      displayProducts();  // Re-fetch and display the updated list of products
+    });
+
+    // Display products from Firestore
+    async function displayProducts() {
+      // Clear the current list
+      productList.innerHTML = '';
+
+      const snapshot = await db.collection('products').get();
+      snapshot.forEach(doc => {
+        const product = doc.data();
+        const li = document.createElement('li');
+        li.textContent = `${product.name} - Expiry Date: ${product.expiryDate}`;
+        productList.appendChild(li);
+      });
+    }
+
+    // Call the function to display products when the page loads
+    displayProducts();
+  </script>
+
+</body>
+</html>
+
   
   <style>
     body {
